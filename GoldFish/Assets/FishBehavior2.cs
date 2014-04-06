@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class FishBehavior : MonoBehaviour
+public class FishBehavior2 : MonoBehaviour
 {
     const float TAIL_SOFTNESS = 0.3f; /* the smaller, the softer */
 
@@ -15,25 +15,25 @@ public class FishBehavior : MonoBehaviour
     const float WONDER_RANGE_MAX = 20f;
 
     float DelayAccumulation = 0f;
-    List<FishTailBehavior> tailControllers = new List<FishTailBehavior>();
+    List<FishTailBehavior2> tailControllers = new List<FishTailBehavior2>();
     Transform body = null;
 
-    Vector3[] rotationVectors = new Vector3[12];
-    float[] rotationDeltas = new float[12];
-    float[] rotations = new float[12];
-    float[] rotationCaches = new float[12];
+    Vector3[] rotationVectors = new Vector3[11];
+    float[] rotationDeltas = new float[11];
+    float[] rotations = new float[11];
+    float[] rotationCaches = new float[11];
     List<float> RotationPool = new List<float>();
 
     // Use this for initialization
     void Start()
     {
-        var tails = gameObject.GetComponentsInChildren<FishTailBehavior>();
+        var tails = gameObject.GetComponentsInChildren<FishTailBehavior2>();
         for (int i = 0; i < tails.Length; i++)
         {
             tailControllers.Add(tails[i]);
         }
 
-        body = transform.FindChild("fishbody");
+        body = transform.FindChild("fishbody2");
     }
 
     void Update()
@@ -52,7 +52,7 @@ public class FishBehavior : MonoBehaviour
         body.Rotate(0f, rDelta, 0f);
 
         //rotate tails
-        for (int i = 11; i > 0; i--)
+        for (int i = 10; i > 0; i--)
         {
             rDelta = (rotations[i - 1] - rotations[i]) * TAIL_SOFTNESS;
             rotationDeltas[i] = rDelta;
