@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class FishBehavior2 : MonoBehaviour
 {
     const float TAIL_SOFTNESS = 0.3f; /* the smaller, the softer */
+    //const float TAIL_SOFTNESS_MIN = 0.2f; 
+    //const float TAIL_SOFTNESS_MAX = 0.4f; 
 
     //const float INTERVAL_MIN = 0.1f;
     //const float INTERVAL_MAX = 0.2f;
@@ -52,6 +54,7 @@ public class FishBehavior2 : MonoBehaviour
         body.Rotate(0f, rDelta, 0f);
 
         //rotate tails
+        //float tailSoftness = Random.Range(TAIL_SOFTNESS_MIN, TAIL_SOFTNESS_MAX);
         for (int i = 10; i > 0; i--)
         {
             rDelta = (rotations[i - 1] - rotations[i]) * TAIL_SOFTNESS;
