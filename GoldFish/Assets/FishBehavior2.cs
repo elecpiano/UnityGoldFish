@@ -13,17 +13,21 @@ public class FishBehavior2 : MonoBehaviour
     //float Interval = 0.15f;
     const float INTERVAL = 0.2f;
 
-    const float WONDER_RANGE_MIN = 10f;
-    const float WONDER_RANGE_MAX = 20f;
+    const float WONDER_RANGE_MIN = 5f;
+    const float WONDER_RANGE_MAX = 10f;
+
+    public const int MESH_ROW_COUNT = 10;
+    public const int TAIL_ROW_INDEX_MIN = 2;
+    public const int TAIL_ROW_INDEX_MAX = 9;
 
     float DelayAccumulation = 0f;
     List<FishTailBehavior2> tailControllers = new List<FishTailBehavior2>();
     Transform body = null;
 
-    Vector3[] rotationVectors = new Vector3[11];
-    float[] rotationDeltas = new float[11];
-    float[] rotations = new float[11];
-    float[] rotationCaches = new float[11];
+    float[] rotationDeltas = new float[MESH_ROW_COUNT];
+    float[] rotations = new float[MESH_ROW_COUNT];
+    float bodyRotation;
+    float rotationTarget;
     List<float> RotationPool = new List<float>();
 
     // Use this for initialization
@@ -48,19 +52,22 @@ public class FishBehavior2 : MonoBehaviour
     {
         float delta = Time.deltaTime;
         float portion = delta / INTERVAL;
-        float rDelta = rotationCaches[0] * portion;
-        rotations[0] += rDelta;
+        float rDelta = rotationTarget * portion;
+        bodyRotation += rDelta;
         //rotate body
         body.Rotate(0f, rDelta, 0f);
 
         //rotate tails
-        //float tailSoftness = Random.Range(TAIL_SOFTNESS_MIN, TAIL_SOFTNESS_MAX);
-        for (int i = 10; i > 0; i--)
+        for (int i = TAIL_ROW_INDEX_MAX; i > TAIL_ROW_INDEX_MIN; i--)
         {
             rDelta = (rotations[i - 1] - rotations[i]) * TAIL_SOFTNESS;
             rotationDeltas[i] = rDelta;
             rotations[i] += rDelta;
         }
+
+        rDelta = (bodyRotation - rotations[TAIL_ROW_INDEX_MIN]) * TAIL_SOFTNESS;
+        rotationDeltas[TAIL_ROW_INDEX_MIN] = rDelta;
+        rotations[TAIL_ROW_INDEX_MIN] += rDelta;
 
         foreach (var tailController in tailControllers)
         {
@@ -71,8 +78,7 @@ public class FishBehavior2 : MonoBehaviour
         if (DelayAccumulation >= INTERVAL)
         {
             DelayAccumulation = 0f;
-            rotationCaches[0] = Wander();
-            //Interval = Random.Range(INTERVAL_MIN, INTERVAL_MAX);
+            rotationTarget = Wander();
         }
     }
 

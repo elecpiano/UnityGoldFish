@@ -11,8 +11,8 @@ public class FishBehavior : MonoBehaviour
     //float Interval = 0.15f;
     const float INTERVAL = 0.2f;
 
-    const float WONDER_RANGE_MIN = 10f;
-    const float WONDER_RANGE_MAX = 20f;
+    const float WONDER_RANGE_MIN = 5f;
+    const float WONDER_RANGE_MAX = 10f;
 
     float DelayAccumulation = 0f;
     List<FishTailBehavior> tailControllers = new List<FishTailBehavior>();
