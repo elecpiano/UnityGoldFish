@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class FishBehavior2 : MonoBehaviour
 {
-    const float TAIL_SOFTNESS = 0.3f; /* the smaller, the softer */
+    const float TAIL_SOFTNESS = 0.35f; /* the smaller, the softer */
     //const float TAIL_SOFTNESS_MIN = 0.2f; 
     //const float TAIL_SOFTNESS_MAX = 0.4f; 
 
@@ -16,16 +16,15 @@ public class FishBehavior2 : MonoBehaviour
     const float WONDER_RANGE_MIN = 5f;
     const float WONDER_RANGE_MAX = 10f;
 
-    public const int MESH_ROW_COUNT = 10;
-    public const int TAIL_ROW_INDEX_MIN = 2;
-    public const int TAIL_ROW_INDEX_MAX = 9;
+    public const int TAIL_ROW_INDEX_MIN = 4;
+    public const int TAIL_ROW_INDEX_MAX = 19;
 
     float DelayAccumulation = 0f;
     List<FishTailBehavior2> tailControllers = new List<FishTailBehavior2>();
     Transform body = null;
 
-    float[] rotationDeltas = new float[MESH_ROW_COUNT];
-    float[] rotations = new float[MESH_ROW_COUNT];
+    float[] rotationDeltas = new float[TAIL_ROW_INDEX_MAX + 1];
+    float[] rotations = new float[TAIL_ROW_INDEX_MAX + 1];
     float bodyRotation;
     float rotationTarget;
     List<float> RotationPool = new List<float>();
@@ -91,17 +90,6 @@ public class FishBehavior2 : MonoBehaviour
             RotationPool.Add(0 - wonderRange);
             RotationPool.Add(0 - wonderRange);
             RotationPool.Add(wonderRange);
-
-            //int intervalSpan = Random.Range(3, 9);
-            //int upOrDown = Random.Range(0, 2);
-            //for (int i = 0; i < intervalSpan; i++)
-            //{
-            //    RotationPool.Add((upOrDown == 0 ? 1f : -1f) * WONDER_UNIT);
-            //}
-            //for (int i = 0; i < intervalSpan; i++)
-            //{
-            //    RotationPool.Add((upOrDown == 0 ? -1f : 1f) * WONDER_UNIT);
-            //}
         }
 
         float result = RotationPool[0];
