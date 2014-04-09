@@ -48,9 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\ClothController.cs" />
      <Compile Include="Assets\FishBehavior.cs" />
-     <Compile Include="Assets\FishBehavior2.cs" />
-     <Compile Include="Assets\FishTailBehavior.cs" />
-     <Compile Include="Assets\FishTailBehavior2.cs" />
+     <Compile Include="Assets\TailBehavior.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

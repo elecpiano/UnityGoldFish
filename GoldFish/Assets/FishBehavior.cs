@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class FishBehavior : MonoBehaviour
 {
     const float TAIL_SOFTNESS = 0.3f; /* the smaller, the softer */
+    //const float TAIL_SOFTNESS_MIN = 0.2f; 
+    //const float TAIL_SOFTNESS_MAX = 0.4f; 
 
     //const float INTERVAL_MIN = 0.1f;
     //const float INTERVAL_MAX = 0.2f;
@@ -14,20 +16,25 @@ public class FishBehavior : MonoBehaviour
     const float WONDER_RANGE_MIN = 5f;
     const float WONDER_RANGE_MAX = 10f;
 
+    public const int TAIL_ROW_INDEX_MIN = 0;
+    public const int TAIL_ROW_INDEX_MAX = 19;
+
     float DelayAccumulation = 0f;
-    List<FishTailBehavior> tailControllers = new List<FishTailBehavior>();
+    List<TailBehavior> tailControllers = new List<TailBehavior>();
     Transform body = null;
 
-    Vector3[] rotationVectors = new Vector3[12];
-    float[] rotationDeltas = new float[12];
-    float[] rotations = new float[12];
-    float[] rotationCaches = new float[12];
+    float[] rotationDeltas = new float[TAIL_ROW_INDEX_MAX + 1];
+    float[] rotations = new float[TAIL_ROW_INDEX_MAX + 1];
+    float bodyRotation;
+    float rotationTarget;
     List<float> RotationPool = new List<float>();
+
+    const float ROTATION_THRESHOLD = 0.1f;
 
     // Use this for initialization
     void Start()
     {
-        var tails = gameObject.GetComponentsInChildren<FishTailBehavior>();
+        var tails = gameObject.GetComponentsInChildren<TailBehavior>();
         for (int i = 0; i < tails.Length; i++)
         {
             tailControllers.Add(tails[i]);
@@ -46,18 +53,22 @@ public class FishBehavior : MonoBehaviour
     {
         float delta = Time.deltaTime;
         float portion = delta / INTERVAL;
-        float rDelta = rotationCaches[0] * portion;
-        rotations[0] += rDelta;
+        float rDelta = rotationTarget * portion;
+        bodyRotation += rDelta;
         //rotate body
         body.Rotate(0f, rDelta, 0f);
 
         //rotate tails
-        for (int i = 11; i > 0; i--)
+        for (int i = TAIL_ROW_INDEX_MAX; i > TAIL_ROW_INDEX_MIN; i--)
         {
             rDelta = (rotations[i - 1] - rotations[i]) * TAIL_SOFTNESS;
             rotationDeltas[i] = rDelta;
             rotations[i] += rDelta;
         }
+
+        rDelta = (bodyRotation - rotations[TAIL_ROW_INDEX_MIN]) * TAIL_SOFTNESS;
+        rotationDeltas[TAIL_ROW_INDEX_MIN] = rDelta;
+        rotations[TAIL_ROW_INDEX_MIN] += rDelta;
 
         foreach (var tailController in tailControllers)
         {
@@ -68,12 +79,11 @@ public class FishBehavior : MonoBehaviour
         if (DelayAccumulation >= INTERVAL)
         {
             DelayAccumulation = 0f;
-            rotationCaches[0] = Wander();
-            //Interval = Random.Range(INTERVAL_MIN, INTERVAL_MAX);
+            rotationTarget = GetNextAngle();
         }
     }
 
-    private float Wander()
+    private float GetNextAngle()
     {
         if (RotationPool.Count == 0)
         {
@@ -82,17 +92,6 @@ public class FishBehavior : MonoBehaviour
             RotationPool.Add(0 - wonderRange);
             RotationPool.Add(0 - wonderRange);
             RotationPool.Add(wonderRange);
-
-            //int intervalSpan = Random.Range(3, 9);
-            //int upOrDown = Random.Range(0, 2);
-            //for (int i = 0; i < intervalSpan; i++)
-            //{
-            //    RotationPool.Add((upOrDown == 0 ? 1f : -1f) * WONDER_UNIT);
-            //}
-            //for (int i = 0; i < intervalSpan; i++)
-            //{
-            //    RotationPool.Add((upOrDown == 0 ? -1f : 1f) * WONDER_UNIT);
-            //}
         }
 
         float result = RotationPool[0];
@@ -102,13 +101,15 @@ public class FishBehavior : MonoBehaviour
 
     public void ChangeDirection(float angle)
     {
-        bool upOrDown = angle > 0;
-        while (upOrDown ? (angle > 0) : (angle < 0))
+        float upOrDown = angle > 0 ? 1f : -1f;
+        float angle_abs = Mathf.Abs(angle);
+        int max_count = (int)(angle_abs / WONDER_RANGE_MAX);
+        float remainder = angle_abs % WONDER_RANGE_MAX;
+        for (int i = 0; i < max_count; i++)
         {
-            var delta = (upOrDown ? 1f : -1f) * WONDER_RANGE_MAX;
-            RotationPool.Add(delta);
-            angle -= delta;
+            RotationPool.Add(upOrDown * WONDER_RANGE_MAX);
         }
+        RotationPool.Add(upOrDown * remainder);
     }
 
     private void HandleKeyboardInput()
